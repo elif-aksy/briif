@@ -19,6 +19,8 @@ export interface Article {
   published_at: string;
   image_url: string | null;
   is_read: boolean;
+  is_saved: boolean;
+  read_at: string | null;
 }
 
 export interface Source {

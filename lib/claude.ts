@@ -1,27 +1,27 @@
-import Anthropic from '@anthropic-ai/sdk';
+import Groq from 'groq-sdk';
 import type { SummaryResult } from '../types';
 
 const VALID_CATEGORIES = ['siyaset', 'ekonomi', 'spor', 'teknoloji', 'dünya', 'sağlık', 'kültür', 'gündem'];
 
-let client: Anthropic | null = null;
+let client: Groq | null = null;
 
-function getClient(): Anthropic {
+function getClient(): Groq {
   if (client) return client;
-  const apiKey = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY;
+  const apiKey = process.env.EXPO_PUBLIC_GROQ_API_KEY;
   if (!apiKey) {
-    throw new Error('EXPO_PUBLIC_ANTHROPIC_API_KEY must be set');
+    throw new Error('EXPO_PUBLIC_GROQ_API_KEY must be set');
   }
   // NOTE: bundling the API key into the client app means anyone can extract
   // and reuse it. Fine for personal/local use, not for a public release.
-  client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
+  client = new Groq({ apiKey, dangerouslyAllowBrowser: true });
   return client;
 }
 
 export async function summarizeArticle(title: string, content: string): Promise<SummaryResult | null> {
   try {
-    const anthropic = getClient();
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+    const groq = getClient();
+    const completion = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 512,
       messages: [
         {
@@ -36,10 +36,10 @@ Başlık: ${title}
       ],
     });
 
-    const textBlock = message.content.find((block) => block.type === 'text');
-    if (!textBlock || textBlock.type !== 'text') return null;
+    const text = completion.choices[0]?.message?.content;
+    if (!text) return null;
 
-    const jsonMatch = textBlock.text.match(/\{[\s\S]*\}/);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return null;
 
     const parsed = JSON.parse(jsonMatch[0]);

@@ -17,7 +17,7 @@ export default function RootLayout() {
   if (!ready) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -28,12 +28,16 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.text,
+          headerTintColor: colors.onSurface,
+          headerBackTitle: '',
+          headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: colors.background },
         }}
       >
-        <Stack.Screen name="index" options={{ title: 'Briif' }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="article/[id]" options={{ title: 'Haber' }} />
+        <Stack.Screen name="interests" options={{ headerShown: false }} />
+        <Stack.Screen name="history" options={{ headerShown: false }} />
       </Stack>
     </SafeAreaProvider>
   );

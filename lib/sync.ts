@@ -1,7 +1,7 @@
 import { SOURCES } from '../constants/sources';
 import { summarizeArticle } from './claude';
 import { fetchFeedItems } from './rss';
-import { articleExists, insertArticle } from './turso';
+import { articleExists, backfillImageIfMissing, insertArticle } from './turso';
 
 export interface SyncResult {
   added: number;
@@ -23,6 +23,7 @@ export async function syncNews(): Promise<SyncResult> {
     for (const item of items) {
       try {
         if (await articleExists(item.link)) {
+          await backfillImageIfMissing(item.link, item.imageUrl);
           result.skipped += 1;
           continue;
         }
